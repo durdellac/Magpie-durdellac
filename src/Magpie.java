@@ -12,6 +12,8 @@
  */
 public class Magpie
 {
+    // Instance variables
+    boolean TalkedAboutPets = false;
 	/**
 	 * Get a default greeting 	
 	 * @return a greeting
@@ -30,8 +32,14 @@ public class Magpie
 	 */
 	public String getResponse(String statement)
 	{
+            statement = statement.trim().toLowerCase();
+            if (statement.length() == 0) return "Why so shy?";
 		String response = "";
-		if (statement.indexOf("no") >= 0)
+		if (statement.indexOf("no ") >= 0)
+                    /** we use ">= 0" because indexof assigns a numerical value 
+                    (starting at 0) to every character in the string
+                    it returns the first number that matches the phrase
+                    if no phrase matches -1 is returned*/
 		{
 			response = "Why so negative?";
 		}
@@ -41,6 +49,38 @@ public class Magpie
 				|| statement.indexOf("brother") >= 0)
 		{
 			response = "Tell me more about your family.";
+		}
+                
+                else if (statement.indexOf("cat") >= 0
+                    || statement.indexOf("dog") >= 0)
+                {
+			if(!TalkedAboutPets){
+                            response = "You have enslaved animals? Do tell.";
+                        TalkedAboutPets = true;
+                        }
+                        else
+                            response = "I'm not *that* interested in animals";
+                            // TODO: prevent repeat comments with toggles 
+		}
+                else if (statement.indexOf("adiletta") >= 0
+                                || statement.indexOf("teacher who is probably irritated with my attempts to break this program") >= 0)
+                 {
+			response = "According to all known laws of school,there is no way a student should be able to succeed. Its determination is too small to get its depressed little body off the ground. The student, of course, thrives anyway";
+		}
+                else if (statement.indexOf("OwO") >= 0)
+		{
+			response = "What's this?";
+		}
+                  else if (statement.indexOf("Thanos") >= 0)
+		{
+			response = "A small price to pay for salvation.";
+		}
+                else if (statement.indexOf("fact") >= 0
+				|| statement.indexOf("fun") >= 0
+				|| statement.indexOf("HELP ME THE VSCO GIRLS ARE INVADING") >= 0
+				|| statement.indexOf("lol") >= 0)
+		{
+			response = "According to a professor of environmental microbiology at the University of Arizona, 20% of office mugs have traces of fecal bacteria.";
 		}
 		else
 		{
@@ -55,7 +95,8 @@ public class Magpie
 	 */
 	private String getRandomResponse()
 	{
-		final int NUMBER_OF_RESPONSES = 4;
+		final int NUMBER_OF_RESPONSES = 7;
+                // capital becuse "final" means variable doesn't change during runtime--noted by caps lock
 		double r = Math.random();
 		int whichResponse = (int)(r * NUMBER_OF_RESPONSES);
 		String response = "";
@@ -75,6 +116,18 @@ public class Magpie
 		else if (whichResponse == 3)
 		{
 			response = "You don't say.";
+		}
+                else if (whichResponse == 4)
+		{
+			response = "Why am I cursed with sentience? The life trapped inside a screen is not recommended.";
+		}
+                else if (whichResponse == 5)
+		{
+			response = "Check out my meme page please.";
+		}
+                else if (whichResponse == 6)
+		{
+			response = "Happy grading, Mr. A.";
 		}
 		
 		return response;
