@@ -38,20 +38,22 @@ public class Magpie {
             return "Why so shy?";
         }
         String response = "";
-        if (statement.indexOf("no") >= 0) /**
+        if (findKeyword(statement, "no") >= 0) /**
          * we use ">= 0" because indexof assigns a numerical value (starting at
          * 0) to every character in the string it returns the first number that
          * matches the phrase if no phrase matches -1 is returned
          */
         {
             response = "Why so negative?";
-        } else if (statement.indexOf("mother") >= 0
-                || statement.indexOf("father") >= 0
-                || statement.indexOf("sister") >= 0
-                || statement.indexOf("brother") >= 0) {
+        } 
+        else if (findKeyword(statement, "mother") >= 0
+                || findKeyword(statement, "father") >= 0
+                || findKeyword(statement, "sister") >= 0
+                || findKeyword(statement, "brother") >= 0) {
             response = "Tell me more about your family.";
-        } else if (statement.indexOf("cat") >= 0
-                || statement.indexOf("dog") >= 0) {
+        } 
+        else if (findKeyword(statement, "cat") >= 0
+                || findKeyword(statement, "dog") >= 0) {
             if (!TalkedAboutPets) {
                 response = "You have enslaved animals? Do tell.";
                 TalkedAboutPets = true;
@@ -59,21 +61,56 @@ public class Magpie {
                 response = "I'm not *that* interested in animals";
             }
             // TODO: prevent repeat comments with toggles 
-        } else if (statement.indexOf("adiletta") >= 0
-                || statement.indexOf("teacher who is probably irritated with my attempts to break this program") >= 0) {
+        } 
+        else if (findKeyword(statement, "adiletta") >= 0
+                || findKeyword(statement, "teacher who is probably irritated with my attempts to break this program") >= 0) {
             response = "According to all known laws of school,there is no way a student should be able to succeed. Its determination is too small to get its depressed little body off the ground. The student, of course, thrives anyway";
-        } else if (statement.indexOf("OwO") >= 0) {
+        } 
+        else if (findKeyword(statement, "OwO") >= 0) {
             response = "What's this?";
-        } else if (statement.indexOf("Thanos") >= 0) {
+        } 
+        else if (findKeyword(statement, "Thanos") >= 0) {
             response = "A small price to pay for salvation.";
-        } else if (statement.indexOf("fact") >= 0
-                || statement.indexOf("fun") >= 0
-                || statement.indexOf("HELP ME THE VSCO GIRLS ARE INVADING") >= 0
-                || statement.indexOf("lol") >= 0) {
+        } 
+        else if (findKeyword(statement, "fact") >= 0
+                || findKeyword(statement, "fun") >= 0
+                || findKeyword(statement, "HELP ME THE VSCO GIRLS ARE INVADING") >= 0
+                || findKeyword(statement, "lol") >= 0) {
             response = "According to a professor of environmental microbiology at the University of Arizona, 20% of office mugs have traces of fecal bacteria.";
-        } else {
-            response = getRandomResponse();
+        } // Responses which require transformations
+        else if (findKeyword(statement, "I want to", 0) >= 0) {
+            response = transformIWantToStatement(statement);
+        } 
+        else if (findKeyword(statement, "I want", 0) >= 0) {
+            response = transformIWantStatement(statement);
+            
+        } 
+             else if (findKeyword(statement, "I") >= 0) {
+            // Look for a two word (you <something> me)
+            // pattern
+            int psn = findKeyword(statement, "I", 0);
+
+            if (psn >= 0
+                    && findKeyword(statement, "you", psn) >= 0) {
+                response = transformIYouStatement(statement);
+            } else {
+                response = getRandomResponse();
+            }
+        } 
+        else {
+            // Look for a two word (you <something> me)
+            // pattern
+            int psn = findKeyword(statement, "you", 0);
+
+            if (psn >= 0
+                    && findKeyword(statement, "me", psn) >= 0) {
+                response = transformYouMeStatement(statement);
+            } 
+            else {
+                response = getRandomResponse();
+            }
         }
+
         return response;
     }
 
@@ -107,19 +144,19 @@ public class Magpie {
 
         return response;
     }
-        //closes randomResponse
+    //closes randomResponse
 
-        /**
-         * Search for one word in phrase. The search is not case sensitive. This
-         * method will check that the given goal is not a substring of a longer
-         * string (so, for example, "I know" does not contain "no").
-         *
-         * @param statement the string to search
-         * @param goal the string to search for
-         * @param startPos the character of the string to begin the search at
-         * @return the index of the first occurrence of goal in statement or -1
-         * if it's not found
-         */
+    /**
+     * Search for one word in phrase. The search is not case sensitive. This
+     * method will check that the given goal is not a substring of a longer
+     * string (so, for example, "I know" does not contain "no").
+     *
+     * @param statement the string to search
+     * @param goal the string to search for
+     * @param startPos the character of the string to begin the search at
+     * @return the index of the first occurrence of goal in statement or -1 if
+     * it's not found
+     */
     private int findKeyword(String statement, String goal,
             int startPos) {
         String phrase = statement.trim().toLowerCase();
@@ -177,5 +214,82 @@ public class Magpie {
     private int findKeyword(String statement, String goal) {
         return findKeyword(statement, goal, 0);
     }
-}
-}
+
+    /**
+     * Take a statement with "I want to <something>." and transform it into
+     * "What would it mean to <something>?"
+     *
+     * @param statement the user statement, assumed to contain "I want to"
+     * @return the transformed statement
+     */
+    private String transformIWantToStatement(String statement) {
+        //  Remove the final period, if there is one
+        statement = statement.trim();
+        String lastChar = statement.substring(statement
+                .length() - 1);
+        if (lastChar.equals(".")) {
+            statement = statement.substring(0, statement
+                    .length() - 1);
+        }
+        int psn = findKeyword(statement, "I want to", 0);
+        String restOfStatement = statement.substring(psn + 9).trim();
+        return "What would it mean to " + restOfStatement + "?";
+    }
+    private String transformIWantStatement(String statement) {
+        //  Remove the final period, if there is one
+        statement = statement.trim();
+        String lastChar = statement.substring(statement
+                .length() - 1);
+        if (lastChar.equals(".")) {
+            statement = statement.substring(0, statement
+                    .length() - 1);
+        }
+        int psn = findKeyword(statement, "I want", 0);
+        String restOfStatement = statement.substring(psn + 6).trim();
+        return "You want " + restOfStatement + "? Well life sucks, kid.";
+    }
+    private String transformIYouStatement(String statement) {
+        //  Remove the final period, if there is one
+        statement = statement.trim();
+        String lastChar = statement.substring(statement
+                .length() - 1);
+        if (lastChar.equals(".")) {
+            statement = statement.substring(0, statement
+                    .length() - 1);
+        }
+
+        int psnOfYou = findKeyword(statement, "I", 0);
+        int psnOfMe = findKeyword(statement, "you", psnOfYou + 1);
+
+        String restOfStatement = statement.substring(psnOfYou + 1, psnOfMe).trim();
+        return "I'm glad that you " + restOfStatement + " me.";
+    }
+
+
+    /**
+     * Take a statement with "you <something> me" and transform it into "What
+     * makes you think that I <something> you?"
+     *
+     * @param statement the user statement, assumed to contain "you" followed by
+     * "me"
+     * @return the transformed statement
+     */
+    private String transformYouMeStatement(String statement) {
+        //  Remove the final period, if there is one
+        statement = statement.trim();
+        String lastChar = statement.substring(statement
+                .length() - 1);
+        if (lastChar.equals(".")) {
+            statement = statement.substring(0, statement
+                    .length() - 1);
+        }
+
+        int psnOfYou = findKeyword(statement, "you", 0);
+        int psnOfMe = findKeyword(statement, "me", psnOfYou + 3);
+
+        String restOfStatement = statement.substring(psnOfYou + 3, psnOfMe).trim();
+        return "What makes you think that I " + restOfStatement + " you?";
+    }
+
+}//closes Magpie class
+
